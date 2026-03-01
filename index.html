@@ -828,7 +828,7 @@ saldoApos: cliente.saldo
 });
 
 carrinho.forEach(item=>{
-produtos[item.index].qtd -= item.qtd;
+produtos[item.index].quantidade
 });
 
 localStorage.setItem("clientesJB", JSON.stringify(clientes));
@@ -852,8 +852,8 @@ return; // 🔥 PARA AQUI MESMO
 // ============================
 
 carrinho.forEach(item=>{
-produtos[item.index].qtd -= item.qtd;
-});
+if(produtos[index].quantidade < qtdVal) ...
+produtos[index].quantidade -= qtdVal;
 
 vendas.push({
 id: vendaId,
@@ -1402,7 +1402,7 @@ tEstoque.innerHTML=`
 
 produtos.forEach(p=>{
 
-let baixo = p.qtd <= p.min;
+let baixo = p.quantidade <= p.minimo;let baixo = p.qtd <= p.min;
 
 let status = baixo ? "BAIXO" : "OK";
 
@@ -2445,6 +2445,7 @@ atualizarClientes();
 
 
 </html>
+
 
 
 
