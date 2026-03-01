@@ -601,7 +601,7 @@ async function addProduto() {
   const { data, error } = await supabaseClient
     .from("produtos")
     .insert([{
-      nome: "TESTE",
+      produto: "TESTE",
       codigo: "123",
       custo: 1,
       venda: 2,
@@ -2436,6 +2436,7 @@ atualizarClientes();
 
 
 </html>
+
 
 
 
