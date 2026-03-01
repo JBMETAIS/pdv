@@ -677,20 +677,16 @@ prod.innerHTML+=`<option value="${i}">${p.nome}</option>`;
 });
 }
 
-function atualizarProdutos(){
-const t=tProdutos;
-t.innerHTML="<tr><th>Nome</th><th>Código</th><th>Venda</th><th>Qtd</th><th>Ação</th></tr>";
-produtos.forEach((p,index)=>{
+
+ 
 t.innerHTML+=`<tr>
-<td>${p.nome}</td>
+<td>${p.produto}</td>
 <td>${p.codigo}</td>
 <td>R$ ${p.venda.toFixed(2)}</td>
-<td>${p.qtd}</td>
-<td><button class="red" onclick="excluirProduto(${index})">Excluir</button></td>
-</tr>`;
-});
-}
+<td>${p.quantidade}</td>
 
+
+ 
 function excluirProduto(index){
 if(confirm("Deseja excluir este produto?")){
 produtos.splice(index,1);
@@ -2449,6 +2445,7 @@ atualizarClientes();
 
 
 </html>
+
 
 
 
