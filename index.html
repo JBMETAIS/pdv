@@ -694,6 +694,28 @@ atualizarSelect();
 }
 }
 
+
+
+function atualizarProdutos(){
+   t.innerHTML = "";
+
+   produtos.forEach(p=>{
+      t.innerHTML += `
+      <tr>
+        <td>${p.produto}</td>
+        <td>${p.codigo}</td>
+        <td>${p.quantidade}</td>
+      </tr>`;
+   });
+}
+
+
+
+
+
+
+
+
 function atualizarSelect(){
 prod.innerHTML="";
 produtos.forEach((p,i)=>{
@@ -2414,6 +2436,7 @@ atualizarClientes();
 
 
 </html>
+
 
 
 
