@@ -913,7 +913,7 @@ saldoApos: cliente.saldo
 });
 
 carrinho.forEach(item=>{
-produtos[item.index].qtd -= item.qtd;
+produtos[item.index].quantidade -= item.qtd;
 });
 
 localStorage.setItem("clientesJB", JSON.stringify(clientes));
@@ -984,12 +984,12 @@ for (let item of carrinho) {
   }
 
   // 4️⃣ Atualizar estoque no banco
-  await supabaseClient
-    .from("produtos")
-    .update({
-      qtd: produto.qtd - item.qtd
-    })
-    .eq("id", produto.id);
+ await supabaseClient
+  .from("produtos")
+  .update({
+    quantidade: produto.quantidade - item.qtd
+  })
+  .eq("id", produto.id);
 }
 
 // 5️⃣ Recarregar produtos do banco
@@ -2672,6 +2672,7 @@ atualizarClientes();
 
 </body>
 </html>
+
 
 
 
