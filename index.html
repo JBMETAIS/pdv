@@ -1304,218 +1304,71 @@ return numero;
 }
 
 
-function gerarOrcamento(){
+async function gerarOrcamento(){
 
-if(carrinho.length===0){
-alert("Carrinho vazio");
-return;
+if(carrinho.length === 0){
+  alert("Carrinho vazio");
+  return;
 }
 
-let numero = obterNumeroOrcamento();
+if(!confirm("Gerar orçamento?")) return;
 
-let total = parseFloat(document.getElementById("total").innerText) || 0;
+let total = parseFloat(document.getElementById("total").innerText);
 let subtotal = parseFloat(document.getElementById("subtotal").innerText);
-
 let cliente = clienteNome.value || "Consumidor";
-
-let clienteObj = clientes.find(c => c.nome.toLowerCase() === cliente.toLowerCase());
-let telefone = clienteObj ? clienteObj.telefone || "" : "";
-
 let pagamento = formaPagamento.value || "Não informado";
-
-let qtdParcelas = formaPagamento.value === "cartao" ? parcelas.value : "";
+let qtdParcelas = pagamento === "cartao" ? parcelas.value : 1;
 let valorParc = valorParcela.value || "";
 
-let empresa = JSON.parse(localStorage.getItem("configJB")) || {};
+// 🔢 gera número sequencial simples
+let numero = Date.now();
 
+const { data: orcamentoCriado, error } = await supabaseClient
+  .from("vendas")
+  .insert([{
+    cliente_id: null,
+    forma_pagamento: pagamento,
+    subtotal: subtotal,
+    desconto: descontoAtual,
+    total: total,
+    tipo: "ORCAMENTO",
+    numero_orcamento: numero
+  }])
+  .select()
+  .single();
 
-let orcamentoId = "ORC-" + Date.now();
-
-vendas.push({
-id: orcamentoId,
-numero: numero,
-telefone: telefone,
-data: new Date().toLocaleDateString(),
-total: total,
-tipo: "ORCAMENTO",
-itens: JSON.parse(JSON.stringify(carrinho)),
-desconto: descontoAtual,
-cliente: cliente,
-pagamento: pagamento,
-parcelas: qtdParcelas || 1,
-valorParcela: valorParcela.value || "",
-status: "aberto"
-});
-
-localStorage.setItem("vendasJB", JSON.stringify(vendas));
-
-
-let w = window.open("", "", "width=900,height=700");
-
-let html = `
-<html>
-<head>
-<title>Orçamento</title>
-
-<style>
-
-/* 🔥 ESSENCIAL PRA IMPRESSÃO DO ORÇAMENTO */
-@media print {
-*{
--webkit-print-color-adjust: exact !important;
-print-color-adjust: exact !important;
-}
+if(error){
+  console.error(error);
+  alert("Erro ao salvar orçamento!");
+  return;
 }
 
-@page{ size:A4; margin:15mm; }
+const orcamentoId = orcamentoCriado.id;
 
-body{font-family:Arial;margin:0}
+// salva itens
+for(let item of carrinho){
 
-.topo{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:10px;
+  const produto = produtos[item.index];
+
+  await supabaseClient
+    .from("itens_venda")
+    .insert([{
+      venda_id: orcamentoId,
+      produto_id: produto.id,
+      quantidade: item.qtd,
+      preco_unitario: item.preco
+    }]);
 }
 
-.logo{height:70px}
+await carregarHistoricoDoBanco();
 
-.titulo{
-text-align:right;
+alert("Orçamento salvo com sucesso!");
+
+imprimirCupom(total,"ORÇAMENTO");
+
 }
 
-table{
-width:100%;
-border-collapse:collapse;
-margin-top:15px;
-}
-
-th{
-background:#000;
-color:#fff;
-padding:8px;
-border:1px solid #000;
-}
-
-td{
-border:1px solid #000;
-padding:8px;
-}
-
-.info{
-border:1px solid #000;
-padding:10px;
-margin-top:10px;
-}
-
-.footer{
-display:flex;
-margin-top:15px;
-}
-
-.pagamento{
-flex:1;
-border:1px solid #000;
-padding:10px;
-min-height:70px;
-}
-
-.total{
-width:250px;
-border:1px solid #000;
-margin-left:10px;
-padding:10px;
-}
-
-.totalFinal{
-font-size:22px;
-font-weight:bold;
-}
-</style>
-</head>
-
-<body>
-
-<div class="topo">
-<img src="logo.png" class="logo">
-
-<div class="titulo">
-<h2>ORÇAMENTO</h2>
-Nº ${numero}<br>
-Data: ${new Date().toLocaleDateString()}
-</div>
-</div>
-
-<div style="font-size:13px;margin-bottom:10px;">
-<b>${empresa.nome || ""}</b><br>
-${empresa.endereco || ""}<br>
-${empresa.telefone || ""}
-</div>
-
-<div class="info">
-<b>Cliente:</b> ${cliente}<br>
-<b>Telefone:</b> ${telefone}
-</div>
-
-<table>
-<tr>
-<th>Item</th>
-<th>Descrição</th>
-<th>Valor</th>
-<th>Qtd</th>
-<th>Total</th>
-</tr>
-`;
-
-carrinho.forEach((i,index)=>{
-let sub = i.preco * i.qtd;
-
-html += `
-<tr>
-<td>${index+1}</td>
-<td>${i.nome}</td>
-<td>R$ ${i.preco.toFixed(2)}</td>
-<td>${i.qtd}</td>
-<td>R$ ${sub.toFixed(2)}</td>
-</tr>`;
-});
-
-html += `
-</table>
-
-<div class="footer">
-
-<div class="pagamento">
-<b>Forma de pagamento:</b> ${pagamento}<br>
-
-${pagamento === "cartao" ? `
-<b>Parcelas:</b> ${qtdParcelas}x<br>
-<b>Valor por parcela:</b> ${valorParc}
-` : ""}
-
-</div>
-
-<div class="total">
-Subtotal: R$ ${subtotal.toFixed(2)}<br>
-Desconto: ${descontoAtual.toFixed(2)}%
-<hr>
-<div class="totalFinal">
-Total: R$ ${total.toFixed(2)}
-</div>
-</div>
-
-</div>
-
-</body>
-</html>
-`;
-
-w.document.write(html);
-w.document.close();
-w.print();
-}
-
-
+ 
 
 function atualizarEstoque(){
 
@@ -1576,47 +1429,49 @@ ${bolinha}
 
 async function carregarHistoricoDoBanco(){
 
-  const { data, error } = await supabaseClient
-    .from("vendas")
-    .select(`
-      *,
-      itens_venda (
-        quantidade,
-        preco_unitario,
-        produtos (
-          produto
-        )
+const { data, error } = await supabaseClient
+  .from("vendas")
+  .select(`
+    *,
+    itens_venda (
+      quantidade,
+      preco_unitario,
+      produtos (
+        produto
       )
-    `)
-    .order("id", { ascending: false });
+    )
+  `)
+  .order("id", { ascending: false });
 
-  if(error){
-    console.error(error);
-    alert("Erro ao carregar histórico do banco");
-    return;
-  }
-
-  vendas = data.map(v => ({
-
-    id: v.id,
-    data: new Date(v.created_at).toLocaleString("pt-BR"),
-    total: v.total,
-    tipo: "VENDA",
-    cliente: "Consumidor",
-    pagamento: v.forma_pagamento,
-    desconto: v.desconto || 0,
-
-    // 🔥 AGORA VEM OS ITENS CORRETOS
-    itens: v.itens_venda.map(item => ({
-      nome: item.produtos.produto,
-      qtd: item.quantidade,
-      preco: item.preco_unitario
-    }))
-
-  }));
-
-  atualizarHistorico();
+if(error){
+  console.error(error);
+  alert("Erro ao carregar histórico");
+  return;
 }
+
+vendas = data.map(v => ({
+
+  id: v.id,
+  numero: v.numero_orcamento || v.id,
+  data: new Date(v.created_at).toLocaleString("pt-BR"),
+  total: v.total,
+  tipo: v.tipo || "VENDA",
+  cliente: "Consumidor",
+  pagamento: v.forma_pagamento,
+  desconto: v.desconto || 0,
+  subtotal: v.subtotal || 0,
+
+  itens: v.itens_venda.map(item => ({
+    nome: item.produtos.produto,
+    qtd: item.quantidade,
+    preco: item.preco_unitario
+  }))
+
+}));
+
+atualizarHistorico();
+}
+ 
  
 
 function atualizarHistorico(){
@@ -2628,6 +2483,7 @@ atualizarClientes();
 
 </body>
 </html>
+
 
 
 
