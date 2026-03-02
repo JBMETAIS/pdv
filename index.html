@@ -752,15 +752,30 @@ t.innerHTML += `
 }
  
 
-function excluirProduto(index){
-if(confirm("Deseja excluir este produto?")){
-produtos.splice(index,1);
-localStorage.setItem("produtosJB",JSON.stringify(produtos));
-atualizarProdutos();
-atualizarSelect();
-}
+async function excluirProduto(index){
+
+  if(!confirm("Deseja excluir este produto?")) return;
+
+  const produto = produtos[index];
+
+  const { error } = await supabaseClient
+    .from("produtos")
+    .delete()
+    .eq("codigo", produto.codigo);
+
+  if(error){
+    console.error(error);
+    alert("Erro ao excluir no banco!");
+    return;
+  }
+
+  alert("Produto excluído com sucesso!");
+
+  carregarProdutos(); // 🔥 recarrega direto do Supabase
 }
 
+
+ 
 function atualizarSelect(){
 prod.innerHTML="";
 produtos.forEach((p,i)=>{
@@ -2511,6 +2526,7 @@ atualizarClientes();
 
 
 </html>
+
 
 
 
