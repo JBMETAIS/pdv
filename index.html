@@ -1578,7 +1578,16 @@ async function carregarHistoricoDoBanco(){
 
   const { data, error } = await supabaseClient
     .from("vendas")
-    .select("*")
+    .select(`
+      *,
+      itens_venda (
+        quantidade,
+        preco_unitario,
+        produtos (
+          produto
+        )
+      )
+    `)
     .order("id", { ascending: false });
 
   if(error){
@@ -1587,21 +1596,27 @@ async function carregarHistoricoDoBanco(){
     return;
   }
 
-  // Converte formato do banco para o formato que seu sistema usa
- vendas = data.map(v => ({
-    id: v.id, // 🔥 MUITO IMPORTANTE
+  vendas = data.map(v => ({
+
+    id: v.id,
     data: new Date(v.created_at).toLocaleString("pt-BR"),
     total: v.total,
     tipo: "VENDA",
     cliente: "Consumidor",
     pagamento: v.forma_pagamento,
-    itens: [],
-    desconto: v.desconto || 0
-}));
+    desconto: v.desconto || 0,
+
+    // 🔥 AGORA VEM OS ITENS CORRETOS
+    itens: v.itens_venda.map(item => ({
+      nome: item.produtos.produto,
+      qtd: item.quantidade,
+      preco: item.preco_unitario
+    }))
+
+  }));
 
   atualizarHistorico();
 }
-
  
 
 function atualizarHistorico(){
@@ -2613,6 +2628,7 @@ atualizarClientes();
 
 </body>
 </html>
+
 
 
 
