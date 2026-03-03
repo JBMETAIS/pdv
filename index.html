@@ -2,8 +2,8 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>PDV JB Metais</title>
-<link rel="icon" type="image/png" href="icone.png">
+<title>PDV JB Santos</title>
+<link rel="icon" type="image/png" href="iconejb.png">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -91,7 +91,7 @@ box-shadow:0 4px 12px rgba(0,0,0,0.4);
 
 body{
 margin:0;
-background:url('fachada.png') no-repeat center center fixed;
+background:url('fachadajb.png') no-repeat center center fixed;
 background-size:cover;
 }
 
@@ -341,7 +341,7 @@ transform:scale(1.05);
 <div class="app">
 
 <div class="sidebar">
-<img src="logo.png">
+<img src="logojb.png">
 <button onclick="show('inicio')">🏠 Início</button>
 <button onclick="show('produtos')">📦 Produtos</button>
 <button onclick="show('pdv')">🛒 Vendas</button>
@@ -354,7 +354,7 @@ transform:scale(1.05);
 <div class="main">
 
 <section id="inicio">
-<h1>Bem-vindo ao Sistema JB Metais</h1>
+<h1>Bem-vindo ao Sistema JB Santos</h1>
 </section>
 
 <section id="produtos" style="display:none">
@@ -1049,7 +1049,7 @@ td{padding:2px 0;}
 
 <div class="center">
 <strong>${tipo}</strong><br>
-${config.nome || "JB METAIS"}<br>
+${config.nome || "JB SANTOS"}<br>
 CNPJ: ${config.cnpj || ""}<br>
 ${config.endereco || ""}<br>
 ${config.telefone || ""}<br>
@@ -1224,7 +1224,7 @@ font-weight:bold;
 <body>
 
 <div class="topo">
-<img src="logo.png" class="logo">
+<img src="logojb.png" class="logo">
 
 <div class="titulo">
 <h2>ORÇAMENTO</h2>
@@ -1541,7 +1541,7 @@ font-weight:bold;
 <body>
 
 <div class="topo">
-<img src="logo.png" class="logo">
+<img src="logojb.png" class="logo">
 <div class="titulo">
 <h2>ORÇAMENTO</h2>
 Nº ${numeroFormatado}
@@ -2446,7 +2446,7 @@ td{padding:2px 0;}
 
 <div class="center">
 <strong>REIMPRESSÃO</strong><br>
-${config.nome || "JB METAIS"}<br>
+${config.nome || "JB SANTOS"}<br>
 CNPJ: ${config.cnpj || ""}<br>
 ${config.endereco || ""}<br>
 ${config.telefone || ""}<br>
@@ -2628,7 +2628,7 @@ hr{border-top:1px dashed #000;}
 <div class="center">
 <strong>COMPROVANTE DE PAGAMENTO</strong><br>
 Recibo Nº: ${String(numeroRecibo).padStart(4,'0')}<br><br>
-${config.nome || "JB METAIS"}<br>
+${config.nome || "JB SANTOS"}<br>
 CNPJ: ${config.cnpj || ""}<br>
 ${config.endereco || ""}<br>
 ${config.telefone || ""}<br>
@@ -2690,7 +2690,7 @@ hr{border-top:1px dashed #000;}
 <div class="center">
 <strong>REIMPRESSÃO - PAGAMENTO</strong><br>
 Recibo Nº: ${String(pag.numeroRecibo).padStart(4,'0')}<br><br>
-${config.nome || "JB METAIS"}<br>
+${config.nome || "JB SANTOS"}<br>
 </div>
 
 <hr>
@@ -2894,6 +2894,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
