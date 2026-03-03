@@ -2456,22 +2456,24 @@ w.print();
 }
 
 
-async function verSaldoRapido() {
-  let cliente = clientes.find(c => c.nome === clienteNome.value);
-  if(!cliente) {
-    alert("Cliente não encontrado");
-    return;
-  }
+function verSaldoRapido() {
 
-  const saldoInfo = await calcularSaldoCliente(cliente.id);
+let cliente = clientes.find(c => c.nome === clienteNome.value);
 
-  document.getElementById("totalCompras").innerText = saldoInfo.totalVendas.toFixed(2);
-  document.getElementById("totalPagamentos").innerText = saldoInfo.totalPagamentos.toFixed(2);
-  document.getElementById("saldoDevedor").innerText = saldoInfo.saldo.toFixed(2);
+if(!cliente){
+alert("Cliente não encontrado");
+return;
+}
 
-  document.getElementById("infoCliente").style.display = "block";
-  document.getElementById("infoCliente").innerText = 
-    `Saldo Total: R$ ${saldoInfo.saldo.toFixed(2)} (Compras: R$ ${saldoInfo.totalVendas.toFixed(2)}, Pagamentos: R$ ${saldoInfo.totalPagamentos.toFixed(2)})`;
+let disponivel = cliente.limite - cliente.saldo;
+
+infoCliente.style.display = "block";
+infoCliente.innerHTML = `
+<b>Saldo Devedor:</b> R$ ${cliente.saldo.toFixed(2)}<br>
+<b>Limite:</b> R$ ${cliente.limite.toFixed(2)}<br>
+<b>Disponível:</b> R$ ${disponivel.toFixed(2)}
+`;
+
 }
  
 
@@ -2849,6 +2851,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
