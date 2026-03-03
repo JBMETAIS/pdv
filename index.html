@@ -2465,6 +2465,13 @@ alert("Cliente não encontrado");
 return;
 }
 
+let infoCliente = document.getElementById("infoCliente");
+
+if(!infoCliente){
+alert("Elemento infoCliente não encontrado no HTML");
+return;
+}
+
 let disponivel = cliente.limite - cliente.saldo;
 
 infoCliente.style.display = "block";
@@ -2473,7 +2480,6 @@ infoCliente.innerHTML = `
 <b>Limite:</b> R$ ${cliente.limite.toFixed(2)}<br>
 <b>Disponível:</b> R$ ${disponivel.toFixed(2)}
 `;
-
 }
  
 
@@ -2851,6 +2857,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
