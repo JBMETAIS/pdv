@@ -1878,85 +1878,54 @@ return cliente;
 
 async function verExtrato(clienteId){
 
-  const { data, error } = await supabaseClient
-    .from("vendas")
-    .select("*")
-    
-    .order("criado_em", { ascending: false });
+const { data, error } = await supabaseClient
+.from("vendas")
+.select("*")
+.eq("cliente_id", clienteId)
+.order("criado_em", { ascending: false });
 
-  if(error){
-    console.error(error);
-    alert("Erro ao carregar extrato");
-    return;
-  }
-
-  console.log("Extrato:", data);
-}
-
-
-
-function verExtratoCompleto(clienteId){
-
-let cliente = clientes.find(c => c.id === clienteId);
-
-if(!cliente){
-alert("Cliente não encontrado!");
+if(error){
+console.error(error);
+alert("Erro ao carregar extrato");
 return;
 }
 
-// 🔥 filtra apenas extratos desse cliente
-let registros = extratos.filter(e => e.clienteId === clienteId);
-
-if(registros.length === 0){
-alert("Cliente sem movimentações.");
+if(!data || data.length === 0){
+alert("Cliente sem movimentacoes");
 return;
 }
 
-// ordena do mais recente
-registros.sort((a,b)=> new Date(b.data) - new Date(a.data));
+let html = "<h3>Extrato do Cliente</h3>";
+html += "<table style='width:100%; margin-top:10px;'>";
 
-let saldoCorrente = 0;
+html += "<tr>";
+html += "<th>Data</th>";
+html += "<th>Pagamento</th>";
+html += "<th>Total</th>";
+html += "</tr>";
 
-let html = `<h3>Extrato de ${cliente.nome}</h3>
-<table style="width:100%; border-collapse:collapse; margin-top:10px;">
-<tr>
-<th style="text-align:left;">Data</th>
-<th style="text-align:left;">Descrição</th>
-<th style="text-align:right;">Valor</th>
-<th style="text-align:right;">Saldo</th>
-</tr>`;
+data.forEach(function(v){
 
-registros.forEach(r=>{
-saldoCorrente = r.saldoApos;
+html += "<tr>";
+html += "<td>" + new Date(v.criado_em).toLocaleString() + "</td>";
+html += "<td>" + v.forma_pagamento + "</td>";
+html += "<td>R$ " + parseFloat(v.total).toFixed(2) + "</td>";
+html += "</tr>";
 
-html += `
-<tr>
-<td>${r.data}</td>
-<td>${r.descricao}</td>
-<td style="text-align:right;">R$ ${r.valor.toFixed(2)}</td>
-<td style="text-align:right;">R$ ${saldoCorrente.toFixed(2)}</td>
-</tr>
-`;
 });
 
-html += `</table>
-<br>
-<button onclick="fecharExtrato()">Fechar</button>
-`;
+html += "</table>";
+html += "<br><button onclick='fecharExtrato()'>Fechar</button>";
 
-const modal = document.getElementById("modalExtrato");
-modal.innerHTML = `
-<div style="background:#fff; padding:20px; border-radius:10px; max-height:70vh; overflow:auto; width:400px;">
-${html}
-</div>
-`;
+let modal = document.getElementById("modalExtrato");
+
+modal.innerHTML =
+"<div style='background:#fff; padding:20px; border-radius:10px; width:400px; max-height:70vh; overflow:auto;'>" 
++ html + 
+"</div>";
 
 modal.style.display = "flex";
 }
-
-
- 
-
 
 
  
@@ -2037,7 +2006,7 @@ R$ ${disponivel.toFixed(2)}
 <div class="btn-group">
 
 <div class="tooltip">
-<button class="btn-small" onclick="verExtratoCompleto(${c.id})">📄</button>
+<button class="btn-small" onclick="verExtrato(${c.id})">📄</button>
 <span class="tooltip-text">Ver Extrato</span>
 </div>
 
@@ -2852,11 +2821,11 @@ carregarClientes();
 </div>
 
 
-<div id="modalExtrato" class="modal-overlay"></div>
- 
+ <div id="modalExtrato" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;"></div>
 
 </body>
 </html>
+
 
 
 
