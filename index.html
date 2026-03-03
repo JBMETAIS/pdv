@@ -1669,13 +1669,14 @@ const { data, error } = await supabaseClient
   .from("vendas")
   .select(`
     *,
-    itens_venda (
-      quantidade,
-      preco_unitario,
-      produtos (
-        produto
-      )
-    )
+   itens_venda (
+  quantidade,
+  preco_unitario,
+  produto_id,
+  produtos (
+    produto
+  )
+)
   `)
   .order("id", { ascending: false });
 
@@ -1697,11 +1698,12 @@ vendas = data.map(v => ({
   desconto: v.desconto || 0,
   subtotal: v.subtotal || 0,
 
-  itens: v.itens_venda.map(item => ({
-    nome: item.produtos.produto,
-    qtd: item.quantidade,
-    preco: item.preco_unitario
-  }))
+ itens: v.itens_venda.map(item => ({
+  produto_id: item.produto_id,
+  nome: item.produtos.produto,
+  qtd: item.quantidade,
+  preco: item.preco_unitario
+}))
 
 }));
 
@@ -2724,6 +2726,7 @@ atualizarClientes();
 
 </body>
 </html>
+
 
 
 
