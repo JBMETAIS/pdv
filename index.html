@@ -1879,11 +1879,11 @@ return cliente;
 async function verExtrato(clienteId){
 
 const { data, error } = await supabaseClient
-.from("vendas")
-.select()
-.eq("cliente_id", clienteId)
-.order("criado_em", { ascending: false });
-
+  .from("vendas")
+  .select("id, total, criado_em")
+  .eq("cliente_id", clienteId)
+  .order("criado_em", { ascending: false });
+ 
 if(error){
 console.error(error);
 alert("Erro ao carregar extrato");
@@ -2825,6 +2825,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
