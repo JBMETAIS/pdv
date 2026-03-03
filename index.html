@@ -882,7 +882,10 @@ let total=parseFloat(document.getElementById("total").innerText);
 let vendaId = Date.now();
 
 
-const permitido = await podeFinalizarVenda(clienteId, totalVenda);
+let cliente = clientes.find(c => c.nome === clienteNome.value);
+let clienteId = cliente ? cliente.id : null;
+
+const permitido = await podeFinalizarVenda(clienteId, total);
 if(!permitido) return;
  
 // ============================
@@ -2894,6 +2897,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
