@@ -1903,40 +1903,87 @@ await carregarHistoricoDoBanco();
 
 
 
+// Variável global
+let config = {};
 
-// Declaração da função
-async function carregarConfig() {
-  try {
-    const { data, error } = await supabaseClient
+// Função para salvar configuração
+async function salvarConfig() {
+  const dados = {
+    nome: confNome.value,
+    cnpj: confCnpj.value,
+    endereco: confEndereco.value, // sem acento
+    telefone: confTelefone.value
+  };
+
+  // Verifica se já existe empresa
+  const { data: empresaExistente, error: err1 } = await supabaseClient
+    .from("empresa")
+    .select("*")
+    .limit(1)
+    .maybeSingle();
+
+  if (err1) {
+    console.error(err1);
+    alert("Erro ao buscar empresa");
+    return;
+  }
+
+  if (empresaExistente) {
+    const { error } = await supabaseClient
       .from("empresa")
-      .select("*")
-      .limit(1)
-      .maybeSingle();
+      .update(dados)
+      .eq("id", empresaExistente.id);
 
     if (error) {
-      console.error("Erro ao buscar configuração:", error);
+      console.error(error);
+      alert("Erro ao atualizar configuração");
       return;
     }
+  } else {
+    const { error } = await supabaseClient
+      .from("empresa")
+      .insert([dados]);
 
-    if (data) {
-      config = data;
-
-      // Preenche os inputs somente se eles existirem
-      if (confNome) confNome.value = data.nome || "";
-      if (confCnpj) confCnpj.value = data.cnpj || "";
-      if (confEndereco) confEndereco.value = data.endereço || "";
-      if (confTelefone) confTelefone.value = data.telefone || "";
+    if (error) {
+      console.error(error);
+      alert("Erro ao salvar configuração");
+      return;
     }
-  } catch (err) {
-    console.error("Erro inesperado:", err);
+  }
+
+  alert("Configuração salva no banco com sucesso!");
+}
+
+// Função para carregar configuração
+async function carregarConfig() {
+  const { data, error } = await supabaseClient
+    .from("empresa")
+    .select("*")
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  if (data) {
+    config = data;
+    confNome.value = data.nome || "";
+    confCnpj.value = data.cnpj || "";
+    confEndereco.value = data.endereco || "";
+    confTelefone.value = data.telefone || "";
   }
 }
 
-// ⚠️ Garante que só vai rodar depois que o DOM estiver pronto
+// Evento para DOM carregado
 document.addEventListener("DOMContentLoaded", () => {
   carregarConfig();
-});
 
+  // Conecta botão ao salvarConfig
+  document.getElementById("btnSalvar").addEventListener("click", salvarConfig);
+});
+ 
  
 
 async function buscarOuCriarCliente(nome){
@@ -2993,6 +3040,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
