@@ -1007,16 +1007,18 @@ let subtotal = carrinho.reduce((acc, item) => {
 
 const { data: vendaCriada, error: erroVenda } = await supabaseClient
   .from("vendas")
-  .insert([{
-    numero_venda: numeroVenda,
-    numero_orcamento: numeroOrcamento,
-    cliente_id: null,
-    forma_pagamento: tipoOperacao === "VENDA" ? formaPagamento.value : null,
-    subtotal: subtotal,
-    desconto: descontoAtual,
-    total: total,
-    tipo: tipoOperacao
-  }])
+ .insert([{
+  numero_venda: numeroVenda,
+  numero_orcamento: numeroOrcamento,
+  cliente_id: clienteSelecionadoId || null,
+  cliente_nome: clienteNome.value || "Consumidor",
+  cliente_telefone: telefoneCliente.value || "",
+  forma_pagamento: formaPagamento.value || "Não informado",
+  subtotal,
+  desconto: descontoAtual,
+  total,
+  tipo: tipoOperacao
+}])
   .select()
   .single();
 
@@ -3140,6 +3142,7 @@ async function gerarNumeroOrcamento() {
 
 </body>
 </html>
+
 
 
 
