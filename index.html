@@ -1391,7 +1391,7 @@ async function gerarOrcamento(){
   // ===============================
   // 🔥 SE ESTIVER EDITANDO
   // ===============================
-  ifif(orcamentoEmEdicaoId){
+  if(orcamentoEmEdicaoId){
 
   const { data, error } = await supabaseClient
     .from("vendas")
@@ -2904,6 +2904,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
