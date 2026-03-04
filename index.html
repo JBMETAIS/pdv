@@ -950,19 +950,34 @@ for (let item of carrinho) {
 
 // 🔥 3️⃣ Atualizar saldo do cliente no banco
 const novoSaldo = cliente.saldo + total;
+const novoDisponivel = cliente.limite - novoSaldo;
 
 await supabaseClient
   .from("clientes")
   .update({
-    saldo: novoSaldo
+    saldo: novoSaldo,
+    disponivel: novoDisponivel
   })
   .eq("id", cliente.id);
 
 cliente.saldo = novoSaldo;
- 
+cliente.disponivel = novoDisponivel;
+
+
+// 🔥 4️⃣ INSERIR MOVIMENTAÇÃO NO EXTRATO
+await supabaseClient
+  .from("movimentacoes_clientes")
+  .insert([{
+    cliente_id: cliente.id,
+    data: new Date(),
+    descricao: "Venda no PDV",
+    valor: total,
+    tipo: "debito"
+  }]);
+
 await carregarClientes();
 await carregarProdutos();
-
+ 
 alert("Venda marcada na conta com sucesso!");
 
 carrinho = [];
@@ -1918,11 +1933,11 @@ return cliente;
 async function verExtrato(clienteId){
 
 const { data, error } = await supabaseClient
-  .from("vendas")
-  .select("id, total, created_at")
+  .from("movimentacoes_clientes")
+  .select("*")
   .eq("cliente_id", clienteId)
-  .order("created_at", { ascending: false });
- 
+  .order("data", { ascending: false });
+
 if(error){
 console.error(error);
 alert("Erro ao carregar extrato");
@@ -1930,7 +1945,7 @@ return;
 }
 
 if(!data || data.length === 0){
-alert("Cliente sem movimentacoes");
+alert("Cliente sem movimentações");
 return;
 }
 
@@ -1939,16 +1954,16 @@ html += "<table style='width:100%; margin-top:10px;'>";
 
 html += "<tr>";
 html += "<th>Data</th>";
-html += "<th>Pagamento</th>";
-html += "<th>Total</th>";
+html += "<th>Descrição</th>";
+html += "<th>Valor</th>";
 html += "</tr>";
 
-data.forEach(function(v){
+data.forEach(function(mov){
 
 html += "<tr>";
-html += "<td>" + new Date(v.criado_em).toLocaleString() + "</td>";
-html += "<td>" + v.forma_pagamento + "</td>";
-html += "<td>R$ " + parseFloat(v.total).toFixed(2) + "</td>";
+html += "<td>" + new Date(mov.data).toLocaleString("pt-BR") + "</td>";
+html += "<td>" + mov.descricao + "</td>";
+html += "<td>R$ " + parseFloat(mov.valor).toFixed(2) + "</td>";
 html += "</tr>";
 
 });
@@ -1965,7 +1980,6 @@ modal.innerHTML =
 
 modal.style.display = "flex";
 }
-
 
  
 
@@ -2864,6 +2878,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
