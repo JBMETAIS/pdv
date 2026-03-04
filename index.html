@@ -1058,18 +1058,21 @@ if(tipoOperacao === "VENDA"){
 
 } else {
 
-  imprimirOrcamentoA4(vendaCriada);
+  const orcamentoCompleto = {
+    ...vendaCriada,
+    itens: [...carrinho] // 👈 cópia segura
+  };
+
+  imprimirOrcamentoA4(orcamentoCompleto);
   alert("Orçamento gerado!");
 }
 
+// 🔥 LIMPA SÓ DEPOIS DE IMPRIMIR
 carrinho = [];
 descontoAtual = 0;
-
 atualizarCarrinho();
-atualizarClientes();
+await carregarProdutos();
 await carregarHistoricoDoBanco();
-}
- 
 
 
  
@@ -3137,6 +3140,7 @@ async function gerarNumeroOrcamento() {
 
 </body>
 </html>
+
 
 
 
