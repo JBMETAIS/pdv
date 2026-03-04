@@ -1014,18 +1014,18 @@ if(clienteNome && clienteNome.value){
  
 const { data: vendaCriada, error: erroVenda } = await supabaseClient
   .from("vendas")
- .insert([{
-  numero_venda: numeroVenda,
-  numero_orcamento: numeroOrcamento,
-  cliente_id: cliente ? cliente.id : null,
-  cliente_nome: clienteNome.value || "Consumidor",
-  cliente_telefone: telefoneCliente.value || "",
-  forma_pagamento: formaPagamento.value || "Não informado",
-  subtotal,
-  desconto: descontoAtual,
-  total,
-  tipo: tipoOperacao
-}])
+  .insert([{
+    numero_venda: numeroVenda,
+    numero_orcamento: numeroOrcamento,
+    cliente_id: cliente ? cliente.id : null,
+    nome_do_cliente: clienteNome.value || "Consumidor",
+    telefone_do_cliente: "", // coloque seu input aqui se tiver
+    forma_pagamento: formaPagamento.value || "Não informado",
+    subtotal,
+    desconto: descontoAtual,
+    total,
+    tipo: tipoOperacao
+  }])
   .select()
   .single();
 
@@ -3149,6 +3149,7 @@ async function gerarNumeroOrcamento() {
 
 </body>
 </html>
+
 
 
 
