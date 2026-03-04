@@ -1966,65 +1966,89 @@ return novoCliente;
 
 async function verExtrato(clienteId){
 
-console.log("Buscando extrato para ID:", clienteId);
+  const cliente = clientes.find(c => c.id == clienteId);
+  if(!cliente){
+    alert("Cliente não encontrado");
+    return;
+  }
 
-const { data, error } = await supabaseClient
-  .from("movimentacoes_clientes")
-  .select("*")
-  .eq("cliente_id", clienteId);
+  // 🔹 BUSCAR VENDAS NA CONTA
+  const { data: vendas, error: erroVendas } = await supabaseClient
+    .from("vendas")
+    .select("id, total, created_at")
+    .eq("cliente_id", clienteId)
+    .eq("forma_pagamento", "conta");
 
-console.log("Resultado encontrado:", data);
+  if(erroVendas){
+    console.error(erroVendas);
+    alert("Erro ao buscar vendas");
+    return;
+  }
 
- const { data: vendasCliente } = await supabaseClient
-  .from("vendas")
-  .select("*")
-  .eq("cliente_id", clienteId);
- 
-if(error){
-console.error(error);
-alert("Erro ao carregar extrato");
-return;
+  // 🔹 BUSCAR PAGAMENTOS
+  const { data: pagamentos, error: erroPag } = await supabaseClient
+    .from("pagamentos")
+    .select("valor, created_at")
+    .eq("cliente_id", clienteId);
+
+  if(erroPag){
+    console.error(erroPag);
+    alert("Erro ao buscar pagamentos");
+    return;
+  }
+
+  // 🔹 JUNTAR TUDO
+  let extrato = [];
+
+  vendas.forEach(v => {
+    extrato.push({
+      data: v.created_at,
+      descricao: "Venda no PDV",
+      valor: Number(v.total)
+    });
+  });
+
+  pagamentos.forEach(p => {
+    extrato.push({
+      data: p.created_at,
+      descricao: "Pagamento",
+      valor: -Number(p.valor)
+    });
+  });
+
+  // 🔹 ORDENAR POR DATA
+  extrato.sort((a,b) => new Date(a.data) - new Date(b.data));
+
+  // 🔹 CALCULAR SALDO PROGRESSIVO
+  let saldo = 0;
+  let html = "";
+
+  extrato.forEach(item => {
+
+    saldo += item.valor;
+
+    let cor = item.valor > 0 ? "#c62828" : "#1fa84f";
+
+    html += `
+      <tr>
+        <td style="padding:8px;">${new Date(item.data).toLocaleString()}</td>
+        <td style="padding:8px;">${item.descricao}</td>
+        <td style="padding:8px; color:${cor}; font-weight:bold;">
+          R$ ${item.valor.toFixed(2)}
+        </td>
+        <td style="padding:8px; font-weight:bold;">
+          R$ ${saldo.toFixed(2)}
+        </td>
+      </tr>
+    `;
+  });
+
+  document.getElementById("extratoNome").innerText = cliente.nome;
+  document.getElementById("extratoSaldo").innerText = "R$ " + saldo.toFixed(2);
+  document.getElementById("extratoTabela").innerHTML = html;
+
+  document.getElementById("modalExtrato").style.display = "flex";
 }
-
-if(!data || data.length === 0){
-alert("Cliente sem movimentações");
-alert("Cliente sem movimentacoes");
-return;
-}
-
-// resto continua igual
-let html = "<h3>Extrato do Cliente</h3>";
-html += "<table style='width:100%; margin-top:10px;'>";
-
-html += "<tr>";
-html += "<th>Data</th>";
-html += "<th>Pagamento</th>";
-html += "<th>Total</th>";
-html += "</tr>";
-
-data.forEach(function(v){
-
-html += "<tr>";
-html += "<td>" + new Date(v.criado_em).toLocaleString() + "</td>";
-html += "<td>" + v.forma_pagamento + "</td>";
-html += "<td>R$ " + parseFloat(v.total).toFixed(2) + "</td>";
-html += "</tr>";
-
-});
-
-html += "</table>";
-html += "<br><button onclick='fecharExtrato()'>Fechar</button>";
-
-let modal = document.getElementById("modalExtrato");
-
-modal.innerHTML =
-"<div style='background:#fff; padding:20px; border-radius:10px; width:400px; max-height:70vh; overflow:auto;'>" 
-+ html + 
-"</div>";
-
-modal.style.display = "flex";
-}
-
 
 
 
@@ -2228,64 +2252,51 @@ async function registrarPagamento(clienteId, valor){
 
 
 
-function confirmarPagamento(){
+async function confirmarPagamento(){
 
-let cliente = clientes.find(c => c.id === clientePagamentoAtual.id);
-if(!cliente) return;
+  let cliente = clientePagamentoAtual;
+  if(!cliente) return;
 
-let valor = parseFloat(document.getElementById("valorPagamento").value);
-let formaPagamento = document.getElementById("formaPagamentoSelect").value;
+  let valor = parseFloat(document.getElementById("valorPagamento").value);
+  let forma = document.getElementById("formaPagamentoSelect").value;
 
-if(isNaN(valor) || valor <= 0){
-alert("Valor inválido.");
-return;
-}
+  if(isNaN(valor) || valor <= 0){
+    alert("Valor inválido.");
+    return;
+  }
 
-if(valor > cliente.saldo){
-alert("Valor maior que saldo.");
-return;
-}
+  if(valor > cliente.saldo){
+    alert("Valor maior que saldo.");
+    return;
+  }
 
-// desconta saldo
-cliente.saldo -= valor;
+  // 🔹 SALVAR PAGAMENTO NO BANCO
+  const { error } = await supabaseClient
+    .from("pagamentos")
+    .insert([{
+      cliente_id: cliente.id,
+      valor: valor,
+      forma_pagamento: forma
+    }]);
 
-// 🔥 LANÇA NO EXTRATO COMO PAGAMENTO (valor negativo)
-extratos.push({
-    clienteId: cliente.id,
-    vendaId: "PG-" + Date.now(),
-    data: new Date().toLocaleString(),
-    descricao: "Pagamento",
-    valor: -valor,
-    saldoApos: cliente.saldo
-});
+  if(error){
+    console.error(error);
+    alert("Erro ao registrar pagamento");
+    return;
+  }
 
-localStorage.setItem("extratosJB", JSON.stringify(extratos));
+  // 🔹 ATUALIZAR SALDO NO BANCO
+  const novoSaldo = cliente.saldo - valor;
 
-// gerar recibo
-let reciboAtual = numeroRecibo;
-numeroRecibo++;
-localStorage.setItem("numeroRecibo", numeroRecibo);
+  await supabaseClient
+    .from("clientes")
+    .update({ saldo: novoSaldo })
+    .eq("id", cliente.id);
 
-// salvar histórico
-vendas.push({
-data: new Date().toLocaleString(),
-total: valor,
-tipo: "PAGAMENTO",
-cliente: cliente.nome,
-pagamento: formaPagamento,
-itens: [],
-desconto: 0,
-saldoAposPagamento: cliente.saldo,
-numeroRecibo: reciboAtual
-});
+  alert("Pagamento registrado com sucesso!");
 
-localStorage.setItem("clientesJB", JSON.stringify(clientes));
-localStorage.setItem("vendasJB", JSON.stringify(vendas));
-
-imprimirComprovantePagamento(cliente, valor, formaPagamento, reciboAtual);
-
-fecharModalPagamento();
-atualizarClientes();
+  fecharModalPagamento();
+  await carregarClientes();
 }
 
 
@@ -2354,12 +2365,9 @@ async function carregarClientes(){
     return;
   }
 
-  clientes = data; // 🔥 NÃO zera o saldo
-  clientes = data.map(c => ({
-    ...c,
-    saldo: 0 // depois vamos calcular via vendas
-  }));
+  clientes = data; // 🔥 usa saldo real do banco
 
+ 
   atualizarClientes();
 }
 
@@ -2925,10 +2933,9 @@ carregarClientes();
 </div>
 
 
- <div id="modalExtrato" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;"></div>
-
 </body>
 </html>
+
 
 
 
