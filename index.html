@@ -2158,7 +2158,7 @@ R$ ${disponivel.toFixed(2)}
 </div>
 
 <div class="tooltip">
-<button class="btn-small" onclick="reimprimirUltimaVenda('${c.nome}')">🖨</button>
+<button class="btn-small" onclick="reimprimirUltimaVenda('${c.id}')">🖨</button>
 <span class="tooltip-text">Reimprimir Última Venda</span>
 </div>
 
@@ -2180,20 +2180,46 @@ R$ ${disponivel.toFixed(2)}
 
 async function reimprimirUltimaVenda(clienteId){
 
+  // 🔎 Buscar última venda desse cliente
   const { data, error } = await supabaseClient
     .from("vendas")
-    .select("*, itens_venda(*)")
-    .order("criado_em", { ascending: false })
+    .select(`
+      *,
+      itens_venda (
+        quantidade,
+        preco_unitario,
+        produtos (
+          produto
+        )
+      )
+    `)
+    .eq("cliente_id", clienteId)
+    .eq("tipo", "VENDA")
+    .order("created_at", { ascending: false })
     .limit(1)
     .single();
 
-  if(error){
+  if(error || !data){
     console.error(error);
-    alert("Erro ao buscar venda");
+    alert("Nenhuma venda encontrada para este cliente.");
     return;
   }
 
-  imprimirVenda(data);
+  // 🔥 Montar estrutura no formato do seu cupom
+  let vendaFormatada = {
+    cliente: data.cliente || "Consumidor",
+    data: new Date(data.created_at).toLocaleString("pt-BR"),
+    total: data.total,
+    desconto: data.desconto || 0,
+    pagamento: data.forma_pagamento,
+    itens: data.itens_venda.map(item => ({
+      nome: item.produtos.produto,
+      qtd: item.quantidade,
+      preco: item.preco_unitario
+    }))
+  };
+
+  reimprimirCupomVenda(vendaFormatada);
 }
 
 
@@ -2969,3 +2995,4 @@ carregarClientes();
 
 </body>
 </html>
+
