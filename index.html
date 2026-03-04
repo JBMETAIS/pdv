@@ -1904,19 +1904,16 @@ await carregarHistoricoDoBanco();
 
 
 
-// ✅ variável global, apenas uma vez
 let config = {};
 
 async function salvarConfig() {
-  // apenas atribuição local, sem conflito com a global
   const novaConfig = {
     nome: confNome.value,
     cnpj: confCnpj.value,
-    endereco: confEndereco.value, // sem acento
+    endereço: confEndereco.value, // ⚠️ usar acento, igual no banco
     telefone: confTelefone.value
   };
 
-  // verifica se já existe empresa cadastrada
   const { data: empresaExistente, error: fetchError } = await supabaseClient
     .from("empresa")
     .select("*")
@@ -1930,7 +1927,6 @@ async function salvarConfig() {
   }
 
   if (empresaExistente) {
-    // 🔁 Atualiza
     const { error } = await supabaseClient
       .from("empresa")
       .update(novaConfig)
@@ -1942,7 +1938,6 @@ async function salvarConfig() {
       return;
     }
   } else {
-    // ➕ Insere
     const { error } = await supabaseClient
       .from("empresa")
       .insert([novaConfig]);
@@ -1955,7 +1950,6 @@ async function salvarConfig() {
   }
 
   alert("Configuração salva no banco com sucesso!");
-  // atualiza a variável global
   config = novaConfig;
 }
 
@@ -1976,16 +1970,14 @@ async function carregarConfig() {
 
     confNome.value = data.nome || "";
     confCnpj.value = data.cnpj || "";
-    confEndereco.value = data.endereco || "";
+    confEndereco.value = data.endereço || ""; // ⚠️ usar acento
     confTelefone.value = data.telefone || "";
   }
 }
 
-// ⚡️ garante que os campos só sejam carregados depois que o DOM estiver pronto
 document.addEventListener("DOMContentLoaded", () => {
   carregarConfig();
 });
-
  
 
 async function buscarOuCriarCliente(nome){
@@ -3042,6 +3034,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
