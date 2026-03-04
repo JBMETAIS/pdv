@@ -1053,10 +1053,11 @@ atualizarProdutos();
 
 if(tipoOperacao === "VENDA"){
   imprimirCupom(total, "VENDA");
-  alert("Venda finalizada com sucesso!");
+  alert("Venda finalizada!");
 } else {
-  imprimirCupom(total, "ORCAMENTO");
-  alert("Orçamento salvo com sucesso!");
+
+  gerarPDFOrcamento(total); // 👈 função separada
+  alert("Orçamento gerado!");
 }
 
 carrinho = [];
@@ -3134,6 +3135,7 @@ async function gerarNumeroOrcamento() {
 
 </body>
 </html>
+
 
 
 
