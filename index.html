@@ -3003,7 +3003,7 @@ async function salvarConfig() {
   const dados = {
     nome: document.getElementById("confNome").value,
     cnpj: document.getElementById("confCnpj").value,
-    "endereço": document.getElementById("confEndereco").value,
+    endereco: document.getElementById("confEndereco").value,
     telefone: document.getElementById("confTelefone").value
   };
 
@@ -3065,7 +3065,7 @@ async function carregarConfig() {
 
     document.getElementById("confNome").value = data.nome || "";
     document.getElementById("confCnpj").value = data.cnpj || "";
-    document.getElementById("confEndereco").value = data["endereço"] || "";
+    document.getElementById("confEndereco").value = data.endereco || "";
     document.getElementById("confTelefone").value = data.telefone || "";
   }
 }
@@ -3082,6 +3082,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
