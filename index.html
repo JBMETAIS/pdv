@@ -874,6 +874,49 @@ atualizarCarrinho();
 }
 
 
+
+
+
+async function gerarNumeroVenda() {
+
+  const { data, error } = await supabaseClient
+    .from("vendas")
+    .select("numero_venda")
+    .not("numero_venda", "is", null)
+    .order("numero_venda", { ascending: false })
+    .limit(1);
+
+  if (error) {
+    console.error("Erro ao gerar número da venda:", error);
+    return 1;
+  }
+
+  return data.length > 0 ? data[0].numero_venda + 1 : 1;
+}
+
+
+
+
+ async function gerarNumeroOrcamento() {
+
+  const { data, error } = await supabaseClient
+    .from("vendas")
+    .select("numero_orcamento")
+    .not("numero_orcamento", "is", null)
+    .order("numero_orcamento", { ascending: false })
+    .limit(1);
+
+  if (error) {
+    console.error("Erro ao gerar número do orçamento:", error);
+    return 1;
+  }
+
+  return data.length > 0 ? data[0].numero_orcamento + 1 : 1;
+}
+ 
+
+ 
+
 async function finalizarVenda(tipoOperacao){
 
 if(carrinho.length === 0){
@@ -1066,6 +1109,8 @@ await carregarHistoricoDoBanco();
 }
  
 
+
+ 
 function imprimirCupom(total, tipo="VENDA", dadosVenda=null){
 
 let largura = 302;
@@ -3080,6 +3125,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
