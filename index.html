@@ -2044,13 +2044,17 @@ async function cadastrarCliente(){
     return;
   }
 
-  const { error } = await supabaseClient
-    .from("clientes")
-    .insert([{
-      nome: nome,
-      telefone: telefone,
-      limite: limite
-    }]);
+ const { data, error } = await supabaseClient
+  .from("clientes")
+  .insert([{
+    nome: nome,
+    telefone: telefone,
+    limite: limite
+  }])
+  .select();
+
+console.log("DATA:", data);
+console.log("ERROR:", error);
 
   if(error){
     console.error(error);
@@ -2925,6 +2929,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
