@@ -1904,19 +1904,18 @@ await carregarHistoricoDoBanco();
 
 
 
-// ✅ variável global, apenas uma vez
-let config = {};
+// 🔹 declarar uma vez no topo do arquivo
+let config = {}; 
 
 async function salvarConfig() {
-  // apenas atribuição local, sem conflito com a global
-  const novaConfig = {
+  // apenas atribuição, sem let/const
+  config = {
     nome: confNome.value,
     cnpj: confCnpj.value,
-    endereço: confEndereco.value, // sem acento
+    endereço: confEndereco.value, // usar acento igual no banco
     telefone: confTelefone.value
   };
 
-  // verifica se já existe empresa cadastrada
   const { data: empresaExistente, error: fetchError } = await supabaseClient
     .from("empresa")
     .select("*")
@@ -1930,10 +1929,9 @@ async function salvarConfig() {
   }
 
   if (empresaExistente) {
-    // 🔁 Atualiza
     const { error } = await supabaseClient
       .from("empresa")
-      .update(novaConfig)
+      .update(config)
       .eq("id", empresaExistente.id);
 
     if (error) {
@@ -1942,10 +1940,9 @@ async function salvarConfig() {
       return;
     }
   } else {
-    // ➕ Insere
     const { error } = await supabaseClient
       .from("empresa")
-      .insert([novaConfig]);
+      .insert([config]);
 
     if (error) {
       console.error(error);
@@ -1955,8 +1952,6 @@ async function salvarConfig() {
   }
 
   alert("Configuração salva no banco com sucesso!");
-  // atualiza a variável global
-  config = novaConfig;
 }
 
 async function carregarConfig() {
@@ -1972,7 +1967,7 @@ async function carregarConfig() {
   }
 
   if (data) {
-    config = data;
+    config = data; // apenas atribuição
 
     confNome.value = data.nome || "";
     confCnpj.value = data.cnpj || "";
@@ -1981,7 +1976,6 @@ async function carregarConfig() {
   }
 }
 
-// ⚡️ garante que os campos só sejam carregados depois que o DOM estiver pronto
 document.addEventListener("DOMContentLoaded", () => {
   carregarConfig();
 });
@@ -3041,6 +3035,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
