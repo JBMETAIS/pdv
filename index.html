@@ -950,18 +950,36 @@ for (let item of carrinho) {
 
 // 🔥 3️⃣ Atualizar saldo do cliente no banco
 const novoSaldo = cliente.saldo + total;
+const novoDisponivel = cliente.limite - novoSaldo;
 
 await supabaseClient
   .from("clientes")
   .update({
+    saldo: novoSaldo,
+    disponivel: novoDisponivel
     saldo: novoSaldo
   })
   .eq("id", cliente.id);
 
 cliente.saldo = novoSaldo;
+cliente.disponivel = novoDisponivel;
 
+
+// 🔥 4️⃣ INSERIR MOVIMENTAÇÃO NO EXTRATO
+await supabaseClient
+  .from("movimentacoes_clientes")
+  .insert([{
+    cliente_id: cliente.id,
+    data: new Date(),
+    descricao: "Venda no PDV",
+    valor: total,
+    tipo: "debito"
+  }]);
+
+ 
 await carregarClientes();
 await carregarProdutos();
+ 
 
 alert("Venda marcada na conta com sucesso!");
 
@@ -992,7 +1010,6 @@ const { data: vendaCriada, error: erroVenda } = await supabaseClient
     forma_pagamento: formaPagamento.value,
     subtotal: subtotal,
     desconto: descontoAtual,
-    total: total
     total: total,
     tipo: "VENDA"
   }])
@@ -1918,12 +1935,20 @@ return cliente;
 
 async function verExtrato(clienteId){
 
+console.log("Buscando extrato para ID:", clienteId);
+
 const { data, error } = await supabaseClient
+  .from("movimentacoes_clientes")
+  .select("*")
+  .eq("cliente_id", clienteId);
+
+console.log("Resultado encontrado:", data);
+
   .from("vendas")
   .select("id, total, created_at")
   .eq("cliente_id", clienteId)
   .order("created_at", { ascending: false });
-
+ 
 if(error){
 console.error(error);
 alert("Erro ao carregar extrato");
@@ -1931,10 +1956,12 @@ return;
 }
 
 if(!data || data.length === 0){
+alert("Cliente sem movimentações");
 alert("Cliente sem movimentacoes");
 return;
 }
 
+// resto continua igual
 let html = "<h3>Extrato do Cliente</h3>";
 html += "<table style='width:100%; margin-top:10px;'>";
 
@@ -2292,6 +2319,7 @@ async function carregarClientes(){
     return;
   }
 
+  clientes = data; // 🔥 NÃO zera o saldo
   clientes = data.map(c => ({
     ...c,
     saldo: 0 // depois vamos calcular via vendas
