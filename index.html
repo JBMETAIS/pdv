@@ -1903,91 +1903,6 @@ await carregarHistoricoDoBanco();
 
 
 
-// Variável global
-let config = {};
-
-// Função para salvar configuração
-async function salvarConfig() {
-  const dados = {
-    nome: confNome.value,
-    cnpj: confCnpj.value,
-    endereco: confEndereco.value, // sem acento
-    telefone: confTelefone.value
-  };
-
-  // Verifica se já existe empresa
-  const { data: empresaExistente, error: err1 } = await supabaseClient
-    .from("empresa")
-    .select("*")
-    .limit(1)
-    .maybeSingle();
-
-  if (err1) {
-    console.error(err1);
-    alert("Erro ao buscar empresa");
-    return;
-  }
-
-  if (empresaExistente) {
-    const { error } = await supabaseClient
-      .from("empresa")
-      .update(dados)
-      .eq("id", empresaExistente.id);
-
-    if (error) {
-      console.error(error);
-      alert("Erro ao atualizar configuração");
-      return;
-    }
-  } else {
-    const { error } = await supabaseClient
-      .from("empresa")
-      .insert([dados]);
-
-    if (error) {
-      console.error(error);
-      alert("Erro ao salvar configuração");
-      return;
-    }
-  }
-
-  alert("Configuração salva no banco com sucesso!");
-}
-
-// Função para carregar configuração
-async function carregarConfig() {
-  const { data, error } = await supabaseClient
-    .from("empresa")
-    .select("*")
-    .limit(1)
-    .maybeSingle();
-
-  if (error) {
-    console.error(error);
-    return;
-  }
-
-  if (data) {
-    config = data;
-    confNome.value = data.nome || "";
-    confCnpj.value = data.cnpj || "";
-    confEndereco.value = data.endereco || "";
-    confTelefone.value = data.telefone || "";
-  }
-}
-
-// Evento para DOM carregado
-document.addEventListener("DOMContentLoaded", () => {
-  carregarConfig();
-
-  // Conecta botão ao salvarConfig
-  const btnSalvar = document.getElementById("btnSalvar");
-  if (btnSalvar) {
-    btnSalvar.addEventListener("click", salvarConfig);
-  }
-});
- 
-
 
 
 window.salvarConfig = async function() {
@@ -3077,8 +2992,98 @@ carregarClientes();
 </div>
 
 
+
+ <script>
+
+// Variável global (declare apenas uma vez no seu projeto inteiro)
+let config = {};
+
+// Função para salvar
+async function salvarConfig() {
+
+  const dados = {
+    nome: document.getElementById("confNome").value,
+    cnpj: document.getElementById("confCnpj").value,
+    "endereço": document.getElementById("confEndereco").value,
+    telefone: document.getElementById("confTelefone").value
+  };
+
+  const { data: empresaExistente, error: erroBusca } = await supabaseClient
+    .from("empresa")
+    .select("*")
+    .limit(1)
+    .maybeSingle();
+
+  if (erroBusca) {
+    console.error(erroBusca);
+    alert("Erro ao buscar empresa");
+    return;
+  }
+
+  if (empresaExistente) {
+    const { error } = await supabaseClient
+      .from("empresa")
+      .update(dados)
+      .eq("id", empresaExistente.id);
+
+    if (error) {
+      console.error(error);
+      alert("Erro ao atualizar");
+      return;
+    }
+
+  } else {
+    const { error } = await supabaseClient
+      .from("empresa")
+      .insert([dados]);
+
+    if (error) {
+      console.error(error);
+      alert("Erro ao salvar");
+      return;
+    }
+  }
+
+  alert("Configuração salva com sucesso!");
+}
+
+// Função para carregar
+async function carregarConfig() {
+
+  const { data, error } = await supabaseClient
+    .from("empresa")
+    .select("*")
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  if (data) {
+    config = data;
+
+    document.getElementById("confNome").value = data.nome || "";
+    document.getElementById("confCnpj").value = data.cnpj || "";
+    document.getElementById("confEndereco").value = data["endereço"] || "";
+    document.getElementById("confTelefone").value = data.telefone || "";
+  }
+}
+
+// Quando a página carregar
+document.addEventListener("DOMContentLoaded", () => {
+  carregarConfig();
+  document.getElementById("btnSalvar").addEventListener("click", salvarConfig);
+});
+
+</script>
+
+ 
+
 </body>
 </html>
+
 
 
 
