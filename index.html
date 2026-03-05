@@ -923,7 +923,7 @@ if(tipoOperacao === "VENDA" && formaPagamento.value === "conta"){
     .insert([{
       numero_venda: numeroVenda,
       numero_orcamento: null,
-      cliente_id: cliente ? cliente.id : null,
+      cliente_id: cliente.id,
       forma_pagamento: "conta",
       subtotal: total,
       desconto: descontoAtual,
@@ -1011,21 +1011,22 @@ if(clienteNome && clienteNome.value){
   cliente = clientes.find(c => c.nome === clienteNome.value);
 }
 
-
+ 
 const { data: vendaCriada, error: erroVenda } = await supabaseClient
   .from("vendas")
-  .insert([{
-    numero_venda: numeroVenda,
-    numero_orcamento: numeroOrcamento,
-    cliente_id: cliente ? cliente.id : null,
-    nome_do_cliente: clienteNome.value || "Consumidor",
-    telefone_do_cliente: "", // coloque seu input aqui se tiver
-    forma_pagamento: formaPagamento.value || "Não informado",
-    subtotal,
-    desconto: descontoAtual,
-    total,
-    tipo: tipoOperacao
-  }])
+ .insert([{
+  numero_venda: numeroVenda,
+  numero_orcamento: numeroOrcamento,
+  cliente_id: clienteSelecionadoId || null,
+  cliente_id: cliente ? cliente.id : null,
+  cliente_nome: clienteNome.value || "Consumidor",
+  cliente_telefone: telefoneCliente.value || "",
+  forma_pagamento: formaPagamento.value || "Não informado",
+  subtotal,
+  desconto: descontoAtual,
+  total,
+  tipo: tipoOperacao
+}])
   .select()
   .single();
 
@@ -1540,11 +1541,6 @@ async function gerarOrcamento(){
 let empresa = JSON.parse(localStorage.getItem("configJB")) || {};
 
 let numeroFormatado = String(orc.numero || 0).padStart(4,'0');
-let numeroFormatado = String(orc.numero_orcamento || 0).padStart(4,'0');
-
-let dataFormatada = orc.criado_em 
-  ? new Date(orc.criado_em).toLocaleDateString("pt-BR")
-  : new Date().toLocaleDateString("pt-BR");
 
 let w = window.open("", "", "width=900,height=700");
 
@@ -1633,7 +1629,6 @@ font-weight:bold;
 <h2>ORÇAMENTO</h2>
 Nº ${numeroFormatado}
 Data: ${orc.data}
-Data: ${dataFormatada}
 </div>
 </div>
 
@@ -1645,7 +1640,6 @@ ${empresa.telefone || ""}
 
 <div class="info">
 <b>Cliente:</b> ${orc.cliente}
-<b>Cliente:</b> ${orc.nome_do_cliente || "Consumidor"}
 </div>
 
 <table>
@@ -1682,7 +1676,6 @@ ${orc.pagamento === "cartao" ? `
 <b>Parcelas:</b> ${orc.parcelas}x<br>
 <b>Valor por parcela:</b> ${orc.valorParcela}
 ` : ""}
-<b>Forma de pagamento:</b> ${orc.forma_pagamento || "Não informado"}
 </div>
 
 <div class="total">
