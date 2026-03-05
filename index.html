@@ -1005,28 +1005,18 @@ let subtotal = carrinho.reduce((acc, item) => {
   return acc + (item.preco * item.qtd);
 }, 0);
 
-let cliente = null;
-
-if(clienteNome && clienteNome.value){
-  cliente = clientes.find(c => c.nome === clienteNome.value);
-}
-
- 
 const { data: vendaCriada, error: erroVenda } = await supabaseClient
   .from("vendas")
- .insert([{
-  numero_venda: numeroVenda,
-  numero_orcamento: numeroOrcamento,
-  cliente_id: clienteSelecionadoId || null,
-  cliente_id: cliente ? cliente.id : null,
-  cliente_nome: clienteNome.value || "Consumidor",
-  cliente_telefone: telefoneCliente.value || "",
-  forma_pagamento: formaPagamento.value || "Não informado",
-  subtotal,
-  desconto: descontoAtual,
-  total,
-  tipo: tipoOperacao
-}])
+  .insert([{
+    numero_venda: numeroVenda,
+    numero_orcamento: numeroOrcamento,
+    cliente_id: null,
+    forma_pagamento: tipoOperacao === "VENDA" ? formaPagamento.value : null,
+    subtotal: subtotal,
+    desconto: descontoAtual,
+    total: total,
+    tipo: tipoOperacao
+  }])
   .select()
   .single();
 
@@ -1083,6 +1073,7 @@ descontoAtual = 0;
 atualizarCarrinho();
 await carregarProdutos();
 await carregarHistoricoDoBanco();
+
 }
 
 
