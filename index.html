@@ -1136,6 +1136,7 @@ if(dadosVenda){
 }));
 }
 let cliente = dadosVenda ? dadosVenda.cliente : clienteNome.value;
+let numeroPedido = dadosVenda ? dadosVenda.numero_venda : "";
 let desconto = dadosVenda ? dadosVenda.desconto : descontoAtual;
 let valorRec = dadosVenda ? dadosVenda.valorRecebido : valorRecebido.value;
 let valorTroco = dadosVenda ? dadosVenda.troco : troco.value;
@@ -1169,6 +1170,7 @@ ${config.telefone || ""}<br>
 
 <hr>
 
+PED: ${numeroPedido || "-"}<br>
 Cliente: ${cliente || "Consumidor"}<br>
 Data: ${dataVenda}<br>
 
@@ -3044,3 +3046,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
