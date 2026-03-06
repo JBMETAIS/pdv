@@ -1294,8 +1294,8 @@ ${empresa.telefone || ""}
 </div>
 
 <div class="info">
-<b>Cliente:</b> ${orc.cliente}<br>
-<b>Telefone:</b> ${orc.telefone || ""}
+<b>Cliente:</b> ${orc.cliente || "Consumidor"}<br>
+${orc.telefone ? `<b>Telefone:</b> ${orc.telefone}` : ""}
 </div>
 
 <table>
@@ -1656,7 +1656,8 @@ ORÇAMENTO
 
 
 <div class="info">
-<b>Cliente:</b> ${orc.cliente}
+<b>Cliente:</b> ${orc.cliente || "Consumidor"}<br>
+${orc.telefone ? `<b>Telefone:</b> ${orc.telefone}` : ""}
 </div>
 
 <table>
@@ -3117,6 +3118,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
