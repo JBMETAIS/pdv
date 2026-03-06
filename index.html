@@ -1764,7 +1764,9 @@ Total: R$ ${orc.total.toFixed(2)}
 
 w.document.write(html);
 w.document.close();
-w.print();
+w.onload = function(){
+  w.print();
+}
 }
 
 
@@ -3170,6 +3172,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
