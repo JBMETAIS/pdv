@@ -1192,7 +1192,8 @@ let orc = vendas[index];
 
 let empresa = JSON.parse(localStorage.getItem("configJB")) || {};
 
-let numeroFormatado = String(orc.numero || 0).padStart(4,'0');
+let numeroFormatado = String(orc.numero || "").replace("ORC-","");
+numeroFormatado = numeroFormatado.padStart(4,'0');
 
 let w = window.open("", "", "width=900,height=700");
 
@@ -1522,11 +1523,16 @@ async function gerarOrcamento(){
 
 
 
- function imprimirOrcamentoA4(orc){
+ async function imprimirOrcamentoA4(orc){
 
-let empresa = JSON.parse(localStorage.getItem("configJB")) || {};
+const { data: empresa } = await supabaseClient
+.from("empresa")
+.select("*")
+.limit(1)
+.single();
 
-let numeroFormatado = String(orc.numero || 0).padStart(4,'0');
+let numeroFormatado = String(orc.numero || "").replace("ORC-","");
+numeroFormatado = numeroFormatado.padStart(4,'0');
 
 let w = window.open("", "", "width=900,height=700");
 
@@ -3101,6 +3107,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
