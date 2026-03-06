@@ -1616,9 +1616,22 @@ font-weight:bold;
 <body>
 
 <div class="topo">
+
+<div style="width:120px;">
 <img src="logojb.png" class="logo">
-<div class="titulo">
-<h2 style="margin:0;">ORÇAMENTO</h2>
+</div>
+
+<div style="flex:1;text-align:center;font-size:14px;">
+<b style="font-size:18px;">${empresa.nome || ""}</b><br>
+${empresa.endereco || ""}<br>
+Tel: ${empresa.telefone || ""}
+</div>
+
+<div style="width:200px;text-align:right;">
+
+<div style="font-size:22px;font-weight:bold;">
+ORÇAMENTO
+</div>
 
 <div style="font-size:14px;margin-top:5px;">
 <b>Nº:</b> ORC-${numeroFormatado}
@@ -1635,15 +1648,11 @@ font-weight:bold;
 <div style="font-size:14px;">
 <b>Validade:</b> 7 dias
 </div>
-</div>
 
 </div>
 
-<div style="font-size:13px;margin-bottom:10px;">
-<b>${empresa.nome || ""}</b><br>
-${empresa.endereco || ""}<br>
-Tel: ${empresa.telefone || ""}
 </div>
+
 
 <div class="info">
 <b>Cliente:</b> ${orc.cliente}
@@ -3107,6 +3116,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
