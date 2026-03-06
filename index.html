@@ -394,7 +394,7 @@ transform:scale(1.05);
 <div class="pdv-right">
 
 <div style="display:flex; gap:5px;">
-<input id="clienteNome" placeholder="Nome do Cliente">
+<input id="clienteNome" placeholder="Nome do Cliente" onblur="buscarCliente()">
 <input type="text" id="telefoneCliente" placeholder="Telefone do cliente">
 <button class="btn-saldo" onclick="verSaldoRapido()">
 💳 Ver Saldo
@@ -529,6 +529,40 @@ if(id==="estoque") atualizarEstoque();
 if(id==="historico") carregarHistoricoDoBanco();
 }
 
+
+
+
+async function buscarCliente(){
+
+  let nome = document.getElementById("clienteNome").value;
+
+  if(!nome) return;
+
+  const { data, error } = await supabaseClient
+    .from("clientes")
+    .select("*")
+    .ilike("nome", nome)
+    .limit(1)
+    .single();
+
+  if(error || !data){
+    console.log("Cliente não encontrado");
+    return;
+  }
+
+  document.getElementById("telefoneCliente").value = data.telefone || "";
+
+}
+ 
+
+
+
+
+
+
+
+
+ 
 function atualizarFormaPagamento(){
 
 areaCartao.style.display="none";
@@ -3131,6 +3165,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
