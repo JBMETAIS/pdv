@@ -1666,7 +1666,7 @@ font-weight:bold;
 <div class="topo">
 
 <div style="width:120px;">
-<img src="logojb.png" class="logo">
+<img src="https://seusite.com/logojb.png" class="logo">
 </div>
 
 <div style="flex:1;text-align:center;font-size:14px;">
@@ -1853,10 +1853,11 @@ vendas = data.map(v => ({
 
   id: v.id,
   numero: v.numero_orcamento || v.id,
-  data: new Date(v.created_at).toLocaleString("pt-BR"),
+  data: new Date(v.criado_em).toLocaleString("pt-BR"),
   total: v.total,
   tipo: v.tipo || "VENDA",
-  cliente: "Consumidor",
+  cliente: v.nome_do_cliente || "Consumidor",
+  telefone: v.telefone_do_cliente || "",
   pagamento: v.forma_pagamento,
   desconto: v.desconto || 0,
   subtotal: v.subtotal || 0,
@@ -3165,6 +3166,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
