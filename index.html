@@ -1098,7 +1098,7 @@ for (let item of carrinho) {
 await carregarProdutos();
  atualizarProdutos();
 
-imprimirCupom(total,"VENDA", vendaCriada);
+imprimirCupom(total,"VENDA");
 
 alert("Venda finalizada com sucesso!");
 
@@ -1120,7 +1120,7 @@ let pagamento = dadosVenda ? dadosVenda.pagamento : formaPagamento.value;
 let parc = dadosVenda ? dadosVenda.parcelas : parcelas.value;
 let itens = [];
 
-if(dadosVenda && dadosVenda.itens){
+if(dadosVenda){
   itens = dadosVenda.itens.map(i => ({
     nome: i.produtos?.produto || i.nome,
     codigo: i.produtos?.codigo || "",
@@ -1136,7 +1136,7 @@ if(dadosVenda && dadosVenda.itens){
 }));
 }
 let cliente = dadosVenda ? dadosVenda.cliente : clienteNome.value;
-let numeroPedido = dadosVenda?.numero_venda || "";
+let numeroVenda = dadosVenda ? dadosVenda.numero_venda : "";
 let desconto = dadosVenda ? dadosVenda.desconto : descontoAtual;
 let valorRec = dadosVenda ? dadosVenda.valorRecebido : valorRecebido.value;
 let valorTroco = dadosVenda ? dadosVenda.troco : troco.value;
@@ -1170,7 +1170,7 @@ ${config.telefone || ""}<br>
 
 <hr>
 
-PED: ${numeroPedido || "-"}<br>
+PED: ${numeroVenda || "-"}<br>
 Cliente: ${cliente || "Consumidor"}<br>
 Data: ${dataVenda}<br>
 
@@ -3046,7 +3046,3 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
-
-
-
-
