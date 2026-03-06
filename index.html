@@ -1135,12 +1135,12 @@ if(dadosVenda && dadosVenda.itens){
   qtd: i.qtd
 }));
 }
-let cliente = dadosVenda ? dadosVenda.cliente : clienteNome.value;
+let cliente = dadosVenda ? dadosVenda.nome_do_cliente : clienteNome.value;
 let numeroVenda = dadosVenda ? dadosVenda.numero_venda : "";
 let desconto = dadosVenda ? dadosVenda.desconto : descontoAtual;
 let valorRec = dadosVenda ? dadosVenda.valorRecebido : valorRecebido.value;
 let valorTroco = dadosVenda ? dadosVenda.troco : troco.value;
-let dataVenda = dadosVenda ? dadosVenda.data : new Date().toLocaleString();
+let dataVenda = dadosVenda ? dadosVenda.created_at : new Date().toLocaleString();
 
 let html = `
 <html>
@@ -3046,5 +3046,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
