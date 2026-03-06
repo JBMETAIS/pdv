@@ -2159,7 +2159,7 @@ async function reimprimirUltimaVenda(clienteId){
     `)
     .eq("cliente_id", clienteId)
     .eq("tipo", "VENDA")
-    .order("created_at", { ascending: false }) // 🔥 AQUI
+    .order("created_at", { ascending: false })
     .limit(1)
     .single();
 
@@ -2175,6 +2175,9 @@ async function reimprimirUltimaVenda(clienteId){
     total: data.total,
     desconto: data.desconto || 0,
     pagamento: data.forma_pagamento,
+    valorRecebido: data.valor_recebido || 0,
+    troco: data.troco || 0,
+    parcelas: data.parcelas || 1,
     itens: data.itens_venda.map(item => ({
       nome: item.produtos.produto,
       qtd: item.quantidade,
@@ -2182,9 +2185,8 @@ async function reimprimirUltimaVenda(clienteId){
     }))
   };
 
-  reimprimirCupomVenda(vendaFormatada);
+  imprimirCupom(vendaFormatada.total, "REIMPRESSÃO", vendaFormatada);
 }
-
  
 
 function novaVendaCliente(nomeCliente){
@@ -3038,6 +3040,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
