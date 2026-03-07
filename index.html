@@ -1695,7 +1695,7 @@ tEstoque.innerHTML=`
 produtos
 .filter(p => 
   p.produto.toLowerCase().includes(filtro) ||
-  p.codigo.toLowerCase().includes(filtro)
+  p.código.toLowerCase().includes(filtro)
 )
 .forEach(p=>{
 
@@ -1724,7 +1724,7 @@ background:#1fa84f;
 tEstoque.innerHTML+=`
 <tr>
 
-<td>${p.codigo}</td>
+<td>${p.código}</td>
 
 <td>${p.produto}</td>
 
@@ -3071,6 +3071,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
