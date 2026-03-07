@@ -1119,7 +1119,7 @@ let largura = 302;
 let w = window.open("", "", `width=${largura},height=600`);
 
 let pagamento = dadosVenda ? dadosVenda.forma_pagamento : formaPagamento.value;
-let parc = dadosVenda ? dadosVenda.parcelas : parcelas.value;
+let parc = (dadosVenda ? dadosVenda.parcelas : parcelas.value) || 1;
 let itens = [];
 
 if(dadosVenda && dadosVenda.itens){
@@ -1173,6 +1173,7 @@ ${config.nome || "JB SANTOS"}<br>
 CNPJ: ${config.cnpj || ""}<br>
 ${config.endereco || ""}<br>
 ${config.telefone || ""}<br>
+<br>
 <strong>*********** CUPOM NÃO FISCAL ***********</strong><br>
 </div>
 
@@ -1218,7 +1219,7 @@ Troco: ${valorTroco || "R$ 0.00"}<br>
 ` : ""}
 
 ${pagamento === "cartao" ? `
-Parcelas: ${parc}x<br>
+Parcelas: ${(parc || 1)}x<br>
 Valor Parcela: R$ ${(total / (parc || 1)).toFixed(2)}<br>
 ` : ""}
 
@@ -3054,6 +3055,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
