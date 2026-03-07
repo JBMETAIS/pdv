@@ -1733,7 +1733,7 @@ if(error){
 vendas = data.map(v => ({
 
   id: v.id,
-  numero_venda: v.numero_orcamento || v.id,
+ numero_venda: v.numero_venda,
 
   created_at: v.created_at, // importante
 
@@ -3026,6 +3026,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
