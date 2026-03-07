@@ -1436,6 +1436,15 @@ async function gerarOrcamento(){
     }))
   };
 
+vendas.push({
+  ...orcamentoTemp,
+  nome_do_cliente: cliente,
+  forma_pagamento: pagamento,
+  created_at: new Date().toISOString()
+});
+
+
+ 
   imprimirOrcamentoA4(orcamentoTemp);
 
   alert("Orçamento gerado com sucesso!");
@@ -3028,6 +3037,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
