@@ -1143,10 +1143,10 @@ let cliente = dadosVenda
  ? (dadosVenda.nome_do_cliente || dadosVenda.cliente || dadosVenda.nome_cliente)
  : clienteNome.value;
 let numeroVenda = dadosVenda
- ? (dadosVenda.numero_venda || dadosVenda.numero || dadosVenda.id)
+ ? (dadosVenda.numero || dadosVenda.numero_venda || dadosVenda.id)
  : "";
  let numeroFormatado = numeroVenda
- ? "PED-" + String(numeroVenda).padStart(4, "0")
+ ? "PEDIDO-" + String(numeroVenda).padStart(4, "0")
   : "-";
 let desconto = dadosVenda ? dadosVenda.desconto : descontoAtual;
 let valorRec = dadosVenda ? dadosVenda.valorRecebido : valorRecebido.value;
@@ -3026,6 +3026,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
