@@ -1458,8 +1458,22 @@ const { data: empresa } = await supabaseClient
 
 const emp = empresa || {};
 
-let cliente = orc.cliente || orc.cliente_nome || "Consumidor";
-let pagamento = orc.pagamento || orc.forma_pagamento || orc.tipo_pagamento || "";
+let cliente =
+  orc.cliente ||
+  orc.nome_do_cliente ||
+  "Consumidor";
+
+
+let telefone =
+  orc.telefone ||
+  orc.telefone_do_cliente ||
+  "";
+
+  
+let pagamento =
+  orc.pagamento ||
+  orc.forma_pagamento ||
+  "";
 
 let numeroFormatado = String(orc.numero || "").replace("ORC-","");
 numeroFormatado = numeroFormatado.padStart(4,'0');
@@ -3029,6 +3043,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
