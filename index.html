@@ -1774,7 +1774,7 @@ tHistorico.innerHTML=`
 </tr>`;
 
 vendas
-.sort((a,b)=> new Date(b.data) - new Date(a.data))
+.sort((a,b)=> new Date(b.created_at) - new Date(a.created_at))
 .forEach((v,index)=>{
 
 let cor = "#000";
@@ -1789,9 +1789,9 @@ valorFormatado = "R$ " + valorFormatado;
 
 tHistorico.innerHTML+=`
 <tr>
-<td>${v.data}</td>
+<td>${new Date(v.created_at).toLocaleString("pt-BR")}</td>
 <td>${v.tipo}</td>
-<td>${v.cliente || "Consumidor"}</td>
+<td>${v.nome_do_cliente || "Consumidor"}</td>
 <td style="color:${cor}; font-weight:bold;">
 ${valorFormatado}
 </td>
@@ -3026,6 +3026,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
