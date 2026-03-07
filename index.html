@@ -1263,18 +1263,13 @@ imprimirCupom(venda.total, "REIMPRESSÃO", venda);
 }
 
 
-function reimprimirOrcamento(index){
+function reimprimirOrcamento(id){
 
-alert("clicou");
-
-let orc = vendas[index];
-
-console.log(orc);
+let orc = vendas.find(v => v.id === id);
 
 imprimirOrcamentoA4(orc);
 
 }
-
 
 
 function obterNumeroOrcamento(){
@@ -1778,7 +1773,7 @@ tHistorico.innerHTML=`
 <th>Ações</th>
 </tr>`;
 
-vendas
+[...vendas]
 .sort((a,b)=> new Date(b.created_at) - new Date(a.created_at))
 .forEach((v,index)=>{
 
@@ -1805,7 +1800,7 @@ ${valorFormatado}
 
 ${v.tipo === "VENDA" ? `
 <div class="tooltip">
-<button class="btn-small" onclick="reimprimirCupom(${index})">🖨</button>
+<button class="btn-small" onclick="reimprimirOrcamento(${v.id})"">🖨</button>
 <span class="tooltip-text">Reimprimir Venda</span>
 </div>
 ` : ""}
@@ -3031,6 +3026,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
